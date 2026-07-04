@@ -111,6 +111,25 @@ font-size:16px;
 cursor:pointer;
 }
 
+/* CC button */
+#ccbtn{
+position:absolute;
+top:18px;
+left:110px;
+z-index:999;
+display:none;
+padding:10px 14px;
+background:white;
+border:none;
+border-radius:8px;
+font-size:14px;
+cursor:pointer;
+}
+
+#ccbtn.active{
+background:lightgreen;
+}
+
 </style>
 
 </head>
@@ -120,6 +139,7 @@ cursor:pointer;
 <div id="tv">
 
 <button id="back" onclick="showMenu()">← Back</button>
+<button id="ccbtn" onclick="toggleCC()">CC</button>
 
 <div id="menu">
 
@@ -134,7 +154,7 @@ cursor:pointer;
 </div>
 
 <div class="card" onclick="playVideo('illWLEB0vok')">
-<img src="https://img.youtube.com/vi/illWLEB0vok/maxresdefault.jpg">
+<img src="https://img.youtube.com/illWLEB0vok/maxresdefault.jpg">
 <div class="title">Skin & Bone</div>
 </div>
 
@@ -150,11 +170,13 @@ cursor:pointer;
 
 let player;
 let timer;
+let ccOn = false;
 
 function playVideo(id){
 
 document.getElementById("menu").style.display="none";
 document.getElementById("back").style.display="block";
+document.getElementById("ccbtn").style.display="block";
 document.getElementById("player").style.display="block";
 
 document.getElementById("player").innerHTML=`
@@ -167,7 +189,8 @@ videoId:id,
 playerVars:{
 autoplay:1,
 controls:1,
-rel:0
+rel:0,
+cc_load_policy:0
 },
 events:{
 onReady:onReady
@@ -197,6 +220,33 @@ player.seekTo(player.getDuration()*(this.value/100),true);
 
 }
 
+function toggleCC(){
+
+if(!player) return;
+
+ccOn = !ccOn;
+
+const btn = document.getElementById("ccbtn");
+
+if(ccOn){
+
+// probeer Nederlands / captions aan
+player.loadModule("captions");
+
+player.setOption("captions","track",{languageCode:"nl"});
+
+btn.classList.add("active");
+
+}else{
+
+player.setOption("captions","track",null);
+
+btn.classList.remove("active");
+
+}
+
+}
+
 function showMenu(){
 
 clearInterval(timer);
@@ -208,6 +258,7 @@ player.destroy();
 document.getElementById("player").innerHTML="";
 document.getElementById("player").style.display="none";
 document.getElementById("back").style.display="none";
+document.getElementById("ccbtn").style.display="none";
 document.getElementById("menu").style.display="flex";
 
 }
